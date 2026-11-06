@@ -35,7 +35,7 @@ export default function Login() {
 
   return (
     <PantallaFormulario>
-      <Marca tamano={40} />
+      <Marca medida={40} />
 
       <View style={styles.encabezado}>
         <Text style={styles.titulo}>INICIAR SESIÓN</Text>

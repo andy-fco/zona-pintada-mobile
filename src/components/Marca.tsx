@@ -3,13 +3,13 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colores, fuentes } from '@/constants/theme';
 
 interface Props {
-  tamano?: number;
+  medida?: number;
 }
 
-export function Marca({ tamano = 28 }: Props) {
+export function Marca({ medida = 28 }: Props) {
   return (
     <View>
-      <Text style={[styles.nombre, { fontSize: tamano }]}>
+      <Text style={[styles.nombre, { fontSize: medida }]}>
         ZONA <Text style={styles.acento}>PINTADA</Text>
       </Text>
       <Text style={styles.bajada}>FANTASY OFICIAL · LNB</Text>
