@@ -1,6 +1,5 @@
 import { Platform } from 'react-native';
 
-
 export const colores = {
   fondo: '#0B0B0B',
   superficie: '#111111',
@@ -13,8 +12,9 @@ export const colores = {
   textoTenue: '#6B6B6B',
   positivo: '#22C55E',
   negativo: '#EF4444',
+  cancha: '#181A19',
+  lineaCancha: 'rgba(255, 255, 255, 0.18)',
 } as const;
-
 
 export const fuentes = {
   titulo: 'BarlowCondensed_800ExtraBold_Italic',

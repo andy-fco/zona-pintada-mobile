@@ -13,7 +13,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
-import { colores } from '@/constants/theme';
+import { colores, fuentes } from '@/constants/theme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 SplashScreen.preventAutoHideAsync();
@@ -61,6 +61,17 @@ function NavegacionRaiz() {
     >
       <Stack.Protected guard={usuario !== null}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen
+          name="crear-equipo"
+          options={{
+            headerShown: true,
+            title: 'CREAR EQUIPO',
+            headerStyle: { backgroundColor: colores.fondo },
+            headerTintColor: colores.texto,
+            headerTitleStyle: { fontFamily: fuentes.titulo, fontSize: 22 },
+            headerShadowVisible: false,
+          }}
+        />
       </Stack.Protected>
       <Stack.Protected guard={usuario === null}>
         <Stack.Screen name="login" />

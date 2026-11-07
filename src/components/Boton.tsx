@@ -5,7 +5,7 @@ import { colores, espaciado, fuentes, radio } from '@/constants/theme';
 interface Props {
   titulo: string;
   onPress: () => void;
-  variante?: 'primario' | 'secundario';
+  variante?: 'primario' | 'secundario' | 'peligro';
   cargando?: boolean;
   deshabilitado?: boolean;
 }
@@ -25,14 +25,14 @@ export function Boton({
       disabled={inactivo}
       style={({ pressed }) => [
         styles.base,
-        variante === 'primario' ? styles.primario : styles.secundario,
+        styles[variante],
         (pressed || inactivo) && styles.atenuado,
       ]}
     >
       {cargando ? (
         <ActivityIndicator color={colores.texto} />
       ) : (
-        <Text style={styles.texto}>{titulo.toUpperCase()}</Text>
+        <Text style={[styles.texto, variante === 'peligro' && styles.textoPeligro]}>{titulo.toUpperCase()}</Text>
       )}
     </Pressable>
   );
@@ -54,6 +54,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colores.borde,
   },
+  peligro: {
+    backgroundColor: colores.superficie,
+    borderWidth: 1,
+    borderColor: colores.negativo,
+  },
   atenuado: {
     opacity: 0.6,
   },
@@ -62,5 +67,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     letterSpacing: 0.5,
     color: colores.texto,
+  },
+  textoPeligro: {
+    color: colores.negativo,
   },
 });
