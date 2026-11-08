@@ -18,6 +18,14 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 SplashScreen.preventAutoHideAsync();
 
+const ENCABEZADO = {
+  headerShown: true,
+  headerStyle: { backgroundColor: colores.fondo },
+  headerTintColor: colores.texto,
+  headerTitleStyle: { fontFamily: fuentes.titulo, fontSize: 22 },
+  headerShadowVisible: false,
+};
+
 export default function RootLayout() {
   const [fuentesCargadas, errorFuentes] = useFonts({
     BarlowCondensed_700Bold_Italic,
@@ -61,17 +69,8 @@ function NavegacionRaiz() {
     >
       <Stack.Protected guard={usuario !== null}>
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen
-          name="crear-equipo"
-          options={{
-            headerShown: true,
-            title: 'CREAR EQUIPO',
-            headerStyle: { backgroundColor: colores.fondo },
-            headerTintColor: colores.texto,
-            headerTitleStyle: { fontFamily: fuentes.titulo, fontSize: 22 },
-            headerShadowVisible: false,
-          }}
-        />
+        <Stack.Screen name="crear-equipo" options={{ ...ENCABEZADO, title: 'CREAR EQUIPO' }} />
+        <Stack.Screen name="equipo-fantasy/[id]" options={{ ...ENCABEZADO, title: 'EQUIPO' }} />
       </Stack.Protected>
       <Stack.Protected guard={usuario === null}>
         <Stack.Screen name="login" />

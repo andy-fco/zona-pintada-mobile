@@ -17,3 +17,8 @@ export function normalizar(texto: string) {
     .toLowerCase()
     .trim();
 }
+
+export function formatearDiaMes(fecha: string) {
+  const [, mes, dia] = fecha.split('-');
+  return `${dia}/${mes}`;
+}
