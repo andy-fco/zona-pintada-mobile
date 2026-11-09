@@ -1,21 +1,20 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { ApiError } from '@/api/client';
 import { obtenerRankingGeneral, obtenerRankingSemanal } from '@/api/rankings';
-import { listarSemanas, obtenerSemanaActual } from '@/api/semanas';
 import { Boton } from '@/components/Boton';
 import { EstadoVacio } from '@/components/EstadoVacio';
 import { FilaRanking } from '@/components/FilaRanking';
 import { Pantalla } from '@/components/Pantalla';
 import { Selector } from '@/components/Selector';
+import { SelectorSemana } from '@/components/SelectorSemana';
 import { TituloSeccion } from '@/components/TituloSeccion';
 import { colores, espaciado, fuentes, radio } from '@/constants/theme';
-import { formatearDiaMes } from '@/lib/formato';
+import { useSemanasDisponibles } from '@/hooks/useSemanasDisponibles';
 import type { PosicionRanking, Ranking } from '@/types/ranking';
-import type { Semana } from '@/types/semana';
 
 type Vista = 'general' | 'semanal';
 
@@ -42,32 +41,13 @@ function mensajeDeError(e: unknown) {
 
 export default function Competencia() {
   const [vista, setVista] = useState<Vista>('general');
-  const [semanas, setSemanas] = useState<Semana[] | null>(null);
-  const [indiceSemana, setIndiceSemana] = useState(0);
   const [estado, setEstado] = useState<Estado>({ tipo: 'cargando' });
   const [cargandoMas, setCargandoMas] = useState(false);
   const [errorMas, setErrorMas] = useState<string | null>(null);
+  const semanas = useSemanasDisponibles();
 
-  const semana = semanas && semanas.length > 0 ? semanas[indiceSemana] : null;
-  const semanaId = semana?.id ?? null;
-  const esperandoSemanas = vista === 'semanal' && semanas === null;
-  const semanaConsultada = vista === 'semanal' ? semanaId : null;
-
-  useEffect(() => {
-    async function cargarSemanas() {
-      try {
-        const [todas, actual] = await Promise.all([listarSemanas(), obtenerSemanaActual().catch(() => null)]);
-        const disponibles = todas.filter(
-          (item) => item.cerradaAt !== null || (actual !== null && item.numeroSemana <= actual.numeroSemana),
-        );
-        setSemanas(disponibles);
-        setIndiceSemana(Math.max(disponibles.length - 1, 0));
-      } catch {
-        setSemanas([]);
-      }
-    }
-    cargarSemanas();
-  }, []);
+  const esperandoSemanas = vista === 'semanal' && semanas.cargando;
+  const semanaConsultada = vista === 'semanal' ? (semanas.semana?.id ?? null) : null;
 
   useFocusEffect(
     useCallback(() => {
@@ -143,13 +123,13 @@ export default function Competencia() {
 
       <Selector opciones={VISTAS} seleccionado={vista} onCambiar={setVista} />
 
-      {vista === 'semanal' && semana && semanas ? (
+      {vista === 'semanal' && semanas.semana ? (
         <SelectorSemana
-          semana={semana}
-          puedeRetroceder={indiceSemana > 0}
-          puedeAvanzar={indiceSemana < semanas.length - 1}
-          onRetroceder={() => setIndiceSemana(indiceSemana - 1)}
-          onAvanzar={() => setIndiceSemana(indiceSemana + 1)}
+          semana={semanas.semana}
+          puedeRetroceder={semanas.puedeRetroceder}
+          puedeAvanzar={semanas.puedeAvanzar}
+          onRetroceder={semanas.retroceder}
+          onAvanzar={semanas.avanzar}
         />
       ) : null}
 
@@ -203,42 +183,6 @@ export default function Competencia() {
   );
 }
 
-function SelectorSemana({
-  semana,
-  puedeRetroceder,
-  puedeAvanzar,
-  onRetroceder,
-  onAvanzar,
-}: {
-  semana: Semana;
-  puedeRetroceder: boolean;
-  puedeAvanzar: boolean;
-  onRetroceder: () => void;
-  onAvanzar: () => void;
-}) {
-  return (
-    <View style={styles.semana}>
-      <Pressable onPress={onRetroceder} disabled={!puedeRetroceder} hitSlop={10}>
-        <Ionicons
-          name="chevron-back"
-          size={24}
-          color={puedeRetroceder ? colores.texto : colores.borde}
-        />
-      </Pressable>
-      <View style={styles.semanaTextos}>
-        <Text style={styles.semanaTitulo}>SEMANA {semana.numeroSemana}</Text>
-        <Text style={styles.semanaDetalle}>
-          {formatearDiaMes(semana.fechaInicio)} al {formatearDiaMes(semana.fechaFin)} ·{' '}
-          {semana.cerradaAt ? 'Cerrada' : 'En curso'}
-        </Text>
-      </View>
-      <Pressable onPress={onAvanzar} disabled={!puedeAvanzar} hitSlop={10}>
-        <Ionicons name="chevron-forward" size={24} color={puedeAvanzar ? colores.texto : colores.borde} />
-      </Pressable>
-    </View>
-  );
-}
-
 function MiPosicion({ posicion, total, puntos }: { posicion: number; total: number; puntos: number }) {
   return (
     <View style={styles.miPosicion}>
@@ -269,26 +213,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: 'center',
     color: colores.negativo,
-  },
-  semana: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: espaciado.sm,
-  },
-  semanaTextos: {
-    alignItems: 'center',
-    gap: 2,
-  },
-  semanaTitulo: {
-    fontFamily: fuentes.subtitulo,
-    fontSize: 20,
-    color: colores.texto,
-  },
-  semanaDetalle: {
-    fontFamily: fuentes.texto,
-    fontSize: 12,
-    color: colores.textoSecundario,
   },
   miPosicion: {
     flexDirection: 'row',
