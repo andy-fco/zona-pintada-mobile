@@ -104,7 +104,7 @@ export default function Competencia() {
   }
 
   function abrirEquipo(fila: PosicionRanking, propia: boolean) {
-    if (propia) {
+    if (propia && semanaConsultada === null) {
       router.navigate('/equipo');
       return;
     }
