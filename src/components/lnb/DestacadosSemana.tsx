@@ -8,6 +8,7 @@ import { Cancha } from '@/components/Cancha';
 import { CartaJugador } from '@/components/CartaJugador';
 import { EstadoVacio } from '@/components/EstadoVacio';
 import { ModalOpciones } from '@/components/ModalOpciones';
+import { TarjetaDestacado } from '@/components/TarjetaDestacado';
 import { NOMBRE_POSICION, SIGLA_POSICION } from '@/constants/posiciones';
 import { colores, espaciado, fuentes, radio } from '@/constants/theme';
 import { formatearPuntos } from '@/lib/formato';
@@ -70,21 +71,12 @@ export function DestacadosSemana({ semanaId }: { semanaId: number }) {
 
   return (
     <>
-      <View style={styles.mvp}>
-        <View style={styles.mvpDatos}>
-          <Text style={styles.etiqueta}>MVP DE LA SEMANA</Text>
-          <Text style={styles.mvpNombre} numberOfLines={1} adjustsFontSizeToFit>
-            {mvp.nombre} {mvp.apellido}
-          </Text>
-          <Text style={styles.detalle}>
-            {mvp.equipoNombre} · {NOMBRE_POSICION[mvp.posicion]} · {describirPartidos(mvp.partidosJugados)}
-          </Text>
-        </View>
-        <View style={styles.mvpPuntos}>
-          <Text style={styles.mvpValor}>{formatearPuntos(mvp.puntosFantasy)}</Text>
-          <Text style={styles.etiqueta}>PTS</Text>
-        </View>
-      </View>
+      <TarjetaDestacado
+        etiqueta="MVP de la semana"
+        nombre={`${mvp.nombre} ${mvp.apellido}`}
+        detalle={`${mvp.equipoNombre} · ${NOMBRE_POSICION[mvp.posicion]} · ${describirPartidos(mvp.partidosJugados)}`}
+        puntos={formatearPuntos(mvp.puntosFantasy)}
+      />
 
       <Text style={styles.subtitulo}>QUINTETO IDEAL</Text>
       <Cancha
@@ -143,43 +135,10 @@ const styles = StyleSheet.create({
   cargando: {
     marginTop: espaciado.xl,
   },
-  etiqueta: {
-    fontFamily: fuentes.textoNegrita,
-    fontSize: 10,
-    letterSpacing: 1.2,
-    color: colores.textoSecundario,
-  },
   detalle: {
     fontFamily: fuentes.texto,
     fontSize: 12,
     color: colores.textoSecundario,
-  },
-  mvp: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: espaciado.md,
-    padding: espaciado.lg,
-    backgroundColor: colores.naranjaSuave,
-    borderWidth: 1,
-    borderColor: colores.naranja,
-    borderRadius: radio.md,
-  },
-  mvpDatos: {
-    flex: 1,
-    gap: 2,
-  },
-  mvpNombre: {
-    fontFamily: fuentes.titulo,
-    fontSize: 28,
-    color: colores.texto,
-  },
-  mvpPuntos: {
-    alignItems: 'center',
-  },
-  mvpValor: {
-    fontFamily: fuentes.titulo,
-    fontSize: 36,
-    color: colores.naranja,
   },
   subtitulo: {
     fontFamily: fuentes.subtitulo,

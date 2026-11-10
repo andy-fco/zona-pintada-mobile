@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   },
   contenido: {
     padding: espaciado.lg,
-    paddingBottom: espaciado.xxl * 2,
+    paddingBottom: espaciado.xxl,
     gap: espaciado.lg,
   },
 });

@@ -71,6 +71,8 @@ function NavegacionRaiz() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="crear-equipo" options={{ ...ENCABEZADO, title: 'CREAR EQUIPO' }} />
         <Stack.Screen name="equipo-fantasy/[id]" options={{ ...ENCABEZADO, title: 'EQUIPO' }} />
+        <Stack.Screen name="editar-perfil" options={{ ...ENCABEZADO, title: 'EDITAR DATOS' }} />
+        <Stack.Screen name="cambiar-password" options={{ ...ENCABEZADO, title: 'CONTRASEÑA' }} />
       </Stack.Protected>
       <Stack.Protected guard={usuario === null}>
         <Stack.Screen name="login" />

@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
 import * as authApi from '@/api/auth';
-import { registrarAlNoAutorizado } from '@/api/client';
+import { ApiError, registrarAlNoAutorizado } from '@/api/client';
 import { borrarToken, guardarToken, leerToken } from '@/lib/tokenStorage';
 import type { RegistroRequest, Usuario } from '@/types/auth';
 
@@ -11,6 +11,18 @@ interface Sesion {
   iniciarSesion: (identificador: string, password: string) => Promise<void>;
   registrarse: (datos: RegistroRequest) => Promise<void>;
   cerrarSesion: () => Promise<void>;
+  actualizarUsuario: (usuario: Usuario) => void;
+}
+
+const MENSAJE_ADMINISTRADOR = 'Las cuentas de administrador se gestionan desde la web.';
+
+async function obtenerManager() {
+  const perfil = await authApi.obtenerMiPerfil();
+  if (perfil.rol === 'administrador') {
+    await borrarToken();
+    throw new ApiError(403, MENSAJE_ADMINISTRADOR);
+  }
+  return perfil;
 }
 
 const AuthContext = createContext<Sesion | null>(null);
@@ -24,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const token = await leerToken();
         if (token) {
-          setUsuario(await authApi.obtenerMiPerfil());
+          setUsuario(await obtenerManager());
         }
       } catch {
         setUsuario(null);
@@ -46,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function iniciarSesion(identificador: string, password: string) {
     const { token } = await authApi.iniciarSesion({ identificador, password });
     await guardarToken(token);
-    setUsuario(await authApi.obtenerMiPerfil());
+    setUsuario(await obtenerManager());
   }
 
   async function registrarse(datos: RegistroRequest) {
@@ -60,7 +72,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ usuario, cargando, iniciarSesion, registrarse, cerrarSesion }}>
+    <AuthContext.Provider
+      value={{ usuario, cargando, iniciarSesion, registrarse, cerrarSesion, actualizarUsuario: setUsuario }}
+    >
       {children}
     </AuthContext.Provider>
   );

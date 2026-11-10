@@ -29,3 +29,9 @@ export function formatearDiaSemana(fecha: string) {
   const [anio, mes, dia] = fecha.split('-').map(Number);
   return `${DIAS[new Date(anio, mes - 1, dia).getDay()]} ${formatearDiaMes(fecha)}`;
 }
+
+export function fechaLocalIso(fecha: Date) {
+  const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+  const dia = String(fecha.getDate()).padStart(2, '0');
+  return `${fecha.getFullYear()}-${mes}-${dia}`;
+}

@@ -27,3 +27,15 @@ export interface RegistroRequest {
   usuario: string;
   password: string;
 }
+
+export interface ActualizarPerfilRequest {
+  nombre: string;
+  apellido: string;
+  mail: string;
+  usuario: string;
+}
+
+export interface CambiarPasswordRequest {
+  passwordActual: string;
+  passwordNueva: string;
+}
