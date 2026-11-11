@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colores, espaciado } from '@/constants/theme';
@@ -7,10 +7,7 @@ import { colores, espaciado } from '@/constants/theme';
 export function PantallaFormulario({ children }: { children: ReactNode }) {
   return (
     <SafeAreaView style={styles.fondo}>
-      <KeyboardAvoidingView
-        style={styles.fondo}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
+      <KeyboardAvoidingView style={styles.fondo} behavior="padding">
         <ScrollView
           contentContainerStyle={styles.contenido}
           keyboardShouldPersistTaps="handled"
